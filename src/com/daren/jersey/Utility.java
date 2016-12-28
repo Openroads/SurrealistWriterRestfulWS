@@ -47,8 +47,7 @@ public class Utility {
             obj.put("status", new Boolean(status));
             obj.put("error_msg", err_msg);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-        }
+       }
         return obj.toString();
     }
  

@@ -118,7 +118,7 @@ public class DBConnection {
      * @throws SQLException
      * @throws Exception
      */
-    public static boolean insertUser(String uname, String pwd, String reg_date) throws SQLException, Exception {
+    public static boolean insertUser(String uname,String email, String pwd, String reg_date) throws SQLException, Exception {
         boolean insertStatus = false;
         Connection dbConn = null;
         try {
@@ -126,14 +126,13 @@ public class DBConnection {
                 dbConn = DBConnection.createConnection();
                 //System.out.println("Create connection 0"+dbConn);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-            	System.out.println("kurwa"+e.toString());
-                e.printStackTrace();
+                
+                  e.printStackTrace();
             }
          
             Statement stmt = dbConn.createStatement();
-            String query = "INSERT into user(username, hash_password,register_date) values('"+uname+ "','" + 
-            pwd  +"','"+reg_date + "')";
+            String query = "INSERT into user(username,email, hash_password,register_date) values('" + uname
+            		+ "','" + email + "','" + pwd  +"','"+reg_date + "')";
             //System.out.println(query);
             int records = stmt.executeUpdate(query);
             //System.out.println(records);
@@ -158,4 +157,38 @@ public class DBConnection {
         }
         return insertStatus;
     }
+	public static boolean checkEmail(String email) throws SQLException {
+		boolean emailIsUsed = false;
+		Connection dbConn = null;
+    	
+    	try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            Statement stmt = dbConn.createStatement();
+            String query = "SELECT * FROM user WHERE email = '" + email + "'";
+            //System.out.println(query);
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                //System.out.println(rs.getString(1) + rs.getString(2) + rs.getString(3));
+                emailIsUsed = true;
+            }
+        } catch (SQLException sqle) {
+            throw sqle;
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+        return emailIsUsed;
+		
+	}
 }

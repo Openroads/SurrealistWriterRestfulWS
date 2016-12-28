@@ -33,15 +33,14 @@ public class Login {
      * @return
      */
     private boolean checkCredentials(String uname, String pwd){
-        System.out.println("Inside checkCredentials");
+        //System.out.println("Inside checkCredentials");
         boolean result = false;
         if(Utility.isNotNull(uname) && Utility.isNotNull(pwd)){
             try {
                 result = DBConnection.checkLogin(uname, pwd);
                 //System.out.println("Inside checkCredentials try "+result);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                //System.out.println("Inside checkCredentials catch");
+               //System.out.println("Inside checkCredentials catch");
                 result = false;
             }
         }else{
