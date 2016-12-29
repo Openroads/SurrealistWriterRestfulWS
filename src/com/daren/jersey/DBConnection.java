@@ -1,7 +1,6 @@
 package com.daren.jersey;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -145,7 +144,6 @@ public class DBConnection {
             throw sqle;
         } catch (Exception e) {
             //e.printStackTrace();
-            // TODO Auto-generated catch block
             if (dbConn != null) {
                 dbConn.close();
             }
@@ -156,6 +154,42 @@ public class DBConnection {
             }
         }
         return insertStatus;
+    }
+    public static String[] getUserData(String email) throws SQLException
+    {
+    	String[] data = null;
+    	Connection dbConn = null;
+    	
+    	try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Statement stmt = dbConn.createStatement();
+            data = new String[3];
+            String query = "SELECT username,hash_password,register_date FROM user WHERE email = '" + email + "'";
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                //System.out.println(rs.getString(2));
+            	data[0] = 	rs.getString(1);
+            	data[1]	=	rs.getString(2);
+            	data[2]	=	rs.getString(3);
+            }
+        } catch (SQLException sqle) {
+            throw sqle;
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+		return data;
+    	
     }
 	public static boolean checkEmail(String email) throws SQLException {
 		boolean emailIsUsed = false;
