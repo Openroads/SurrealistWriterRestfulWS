@@ -19,19 +19,6 @@ public class Login {
     @Path("/dologin")
     // Produces JSON as response
     @Produces(MediaType.APPLICATION_JSON) 
-   /* // Query parameters are parameters: http://localhost/<appln-folder-name>/login/dologin?username=abc&password=xyz
-    public String doLogin(@QueryParam("username") String uname, @QueryParam("password") String pwd){
-        String response = "";
-        if(checkCredentials(uname, pwd)){
-            response = Utility.constructJSON("login",true);
-        }else{
-            response = Utility.constructJSON("login", false, "Incorrect Email or Password");
-        }
-    return response;        
-    }
-    @GET
-    @Path("/getreg_date")
-    @Produces(MediaType.APPLICATION_JSON) */
     public String getLogDate(@QueryParam("email") String email)
     {
     	String response="";
@@ -40,15 +27,16 @@ public class Login {
     		String[] data = null;
 			try {
 				data = DBConnection.getUserData(email);
-				if(data != null){
+				if(data[0] != null){
 					JSONObject obj = new JSONObject();
 		            try {
 		            	obj.put("tag", "Login/getData");
 		            	obj.put("status",true);
-		            	obj.put("username",data[0]);
-		            	obj.put("hash_pwd", data[1]);
+		            	obj.put("username",data[1]);
+		            	obj.put("hash_pwd", data[2]);
 		                obj.put("email",email);
-		            	obj.put("register_date",data[2]);
+		                obj.put("userid", data[0]);
+		            	obj.put("register_date",data[3]);
 		            	
 		            } catch (JSONException e) {
 		               //System.out.println(e.toString());
@@ -57,7 +45,7 @@ public class Login {
 		            response = obj.toString();
 		            //System.out.println("eee"+response);
 				}else{
-					response = Utility.constructJSON("Login/getData", false," Incorrect email. Correct email address or create new account if you don't have yet.");
+					response = Utility.constructJSON("Login/getData", false,"Wrong email address or password.\nCorrect data or create new account if you don't have.");
 				}
 				
 			} catch (SQLException e1) {
@@ -70,32 +58,6 @@ public class Login {
     	}
 		return response;	
     	
-    }
- 
-    /**
-     * Method to check whether the entered credential is valid
-     * 
-     * @param uname
-     * @param pwd
-     * @return
-     */
-    private boolean checkCredentials(String uname, String pwd){
-        //System.out.println("Inside checkCredentials");
-        boolean result = false;
-        if(Utility.isNotNull(uname) && Utility.isNotNull(pwd)){
-            try {
-                result = DBConnection.checkLogin(uname, pwd);
-                //System.out.println("Inside checkCredentials try "+result);
-            } catch (Exception e) {
-               //System.out.println("Inside checkCredentials catch");
-                result = false;
-            }
-        }else{
-            //System.out.println("Inside checkCredentials else");
-            result = false;
-        }
- 
-        return result;
     }
  
 }

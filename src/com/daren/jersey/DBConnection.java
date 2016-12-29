@@ -72,40 +72,6 @@ public class DBConnection {
         }
     	return userNameAvaliable;
     }
-    public static boolean checkLogin(String uname, String pwd) throws Exception {
-        boolean isUserAvailable = false;
-        Connection dbConn = null;
-        try {
-            try {
-                dbConn = DBConnection.createConnection();
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            Statement stmt = dbConn.createStatement();
-            String query = "SELECT * FROM user WHERE username = '" + uname
-                    + "' AND password=" + "'" + pwd + "'";
-            //System.out.println(query);
-            ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                //System.out.println(rs.getString(1) + rs.getString(2) + rs.getString(3));
-                isUserAvailable = true;
-            }
-        } catch (SQLException sqle) {
-            throw sqle;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            if (dbConn != null) {
-                dbConn.close();
-            }
-            throw e;
-        } finally {
-            if (dbConn != null) {
-                dbConn.close();
-            }
-        }
-        return isUserAvailable;
-    }
     /**
      * Method to insert uname and pwd in DB
      * 
@@ -167,14 +133,16 @@ public class DBConnection {
                 e.printStackTrace();
             }
             Statement stmt = dbConn.createStatement();
-            data = new String[3];
-            String query = "SELECT username,hash_password,register_date FROM user WHERE email = '" + email + "'";
+            data = new String[4];
+            String query = "SELECT userID,username,hash_password,register_date FROM user WHERE email = '" + email + "'";
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 //System.out.println(rs.getString(2));
+            	
             	data[0] = 	rs.getString(1);
             	data[1]	=	rs.getString(2);
             	data[2]	=	rs.getString(3);
+            	data[3] =  	rs.getString(4);
             }
         } catch (SQLException sqle) {
             throw sqle;
