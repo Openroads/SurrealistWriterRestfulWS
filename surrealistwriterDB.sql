@@ -1,6 +1,5 @@
-drop DATABASE surrealist_writer_db;
-CREATE DATABASE IF NOT EXISTS surrealist_writer_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-use surrealist_writer_db;
+CREATE DATABASE IF NOT EXISTS surrealist DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+use surrealist;
 
 CREATE TABLE IF NOT EXISTS user(
   userID int(4) NOT NULL AUTO_INCREMENT,
@@ -10,3 +9,4 @@ CREATE TABLE IF NOT EXISTS user(
   register_date datetime NOT NULL,
   PRIMARY KEY (userID)
 );
+ALTER TABLE user AUTO_INCREMENT = 1;

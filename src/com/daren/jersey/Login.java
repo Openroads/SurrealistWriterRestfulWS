@@ -45,7 +45,7 @@ public class Login {
 		            response = obj.toString();
 		            //System.out.println("eee"+response);
 				}else{
-					response = Utility.constructJSON("Login/getData", false,"Wrong email address or password.\nCorrect data or create new account if you don't have.");
+					response = Utility.constructJSON("Login/getData", false,"Wrong email address or password.\nCorrect data or create a new account if you don't have.");
 				}
 				
 			} catch (SQLException e1) {
