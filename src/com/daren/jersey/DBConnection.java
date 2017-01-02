@@ -193,6 +193,40 @@ public class DBConnection {
         return emailIsUsed;
 		
 	}
+	public static boolean checkColor(String color) throws SQLException {
+		boolean colorIsFree = true;
+		Connection dbConn = null;
+    	
+    	try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            Statement stmt = dbConn.createStatement();
+            String query = "SELECT * FROM gameUser WHERE color = '" + color + "'";
+            //System.out.println(query);
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                //System.out.println(rs.getString(1) + rs.getString(2) + rs.getString(3));
+                colorIsFree = false;
+            }
+        } catch (SQLException sqle) {
+            throw sqle;
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+        return colorIsFree;
+		
+	}
 	 public static boolean createRoom(int adminID, String roomName, String password,int maxPlayers) throws SQLException, Exception {
 	        boolean insertStatus = false;
 	        Connection dbConn = null;
