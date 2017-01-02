@@ -194,7 +194,7 @@ public class DBConnection {
         return emailIsUsed;
 		
 	}
-	public static boolean checkColor(String color) throws SQLException {
+	public static boolean checkColor(String color, String gid) throws SQLException {
 		boolean colorIsFree = true;
 		Connection dbConn = null;
     	
@@ -206,7 +206,7 @@ public class DBConnection {
                 e.printStackTrace();
             }
             Statement stmt = dbConn.createStatement();
-            String query = "SELECT * FROM gameUser WHERE color = '" + color + "'";
+            String query = "SELECT * FROM gameUser WHERE color = '" + color +" AND gameID = "+ gid +"'";
             //System.out.println(query);
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -434,5 +434,42 @@ public class DBConnection {
         }
 		return roomData;
 		
+	}
+	public static ArrayList<User> selectUserFromRoom(int gameID) throws SQLException {
+		ArrayList<User> users = null;
+    	Connection dbConn = null;
+    	
+    	try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            users = new ArrayList<User>();
+            Statement stmt = dbConn.createStatement();
+            String query = "SELECT user.userID,user.username,user.email FROM user join gameUser on gameUser.userID = user.userID where gameUser.gameID= '" + gameID + "'";
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                //System.out.println(rs.getString(2));
+            	User user = new User();
+            	user.setUserID(rs.getInt(1));
+            	user.setUserName(rs.getString(2));
+            	user.setEmail(rs.getString(3));
+            	users.add(user);
+            }
+        } catch (SQLException sqle) {
+            throw sqle;
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+		
+		return users;
 	}
 }

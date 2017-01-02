@@ -1,5 +1,6 @@
 package com.daren.jersey;
 
+import java.util.List;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -12,6 +13,10 @@ import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.reflect.TypeToken;
 
 
 @Path("/room")
@@ -108,12 +113,64 @@ public class Room {
 	            response = roomJSONObj.toString();
 	            //System.out.println("eee"+response);
 			}else{
-				response = Utility.constructJSON("CurrentRoom", false,"Wrong data,any room exists");
+				response = Utility.constructJSON("CurrentRoom", false,"Wrong data,any room doesn't exists");
 			}
 			
 		} catch (SQLException e1) {
 				e1.printStackTrace();
 		}
+		return response;
+		
+	}
+	@GET
+    @Path("/playersinroom")  
+    @Produces(MediaType.APPLICATION_JSON)
+	public String getPlayersInRoom(@QueryParam("game_id") String gid)
+	{
+		String response="";
+		
+		if(Utility.isNotNull(gid)){
+			try {
+				int gameID = Integer.parseInt(gid);
+				ArrayList<User> usersArray = DBConnection.selectUserFromRoom(gameID);
+				JSONObject firstobj = new JSONObject();
+            	firstobj.put("tag", "UsersInRoom");
+            	firstobj.put("status", true);
+            	firstobj.put("users_amount", usersArray.size());
+            	
+            	//System.out.println(jsonUserArray.toString());
+            	
+            	JsonArray result = (JsonArray) new Gson().toJsonTree(usersArray,
+                        new TypeToken<List<User>>() {
+                        }.getType());
+            	System.out.println(result.toString());
+            	
+            	JSONObject  playerInRoomJSON = new JSONObject();
+            	playerInRoomJSON.put("Info", firstobj);
+            	playerInRoomJSON.put("UsersArray", result);
+            	response = playerInRoomJSON.toString();
+            	
+				
+			} catch (SQLException sqle) {
+				
+				sqle.printStackTrace();
+				System.out.println("createRoomAndGame catch sqle");
+                if(sqle.getErrorCode() == 1064){
+                    System.out.println(sqle.getErrorCode());
+                    response = Utility.constructJSON("UsersInRoom",false, "Special Characters in passed data are not allowed ");
+                }else{
+                	response = Utility.constructJSON("UsersInRoom",false, "Error occured");
+                	System.out.println(sqle.toString());
+                }
+			} catch (JSONException e) {
+				e.printStackTrace();
+	            System.out.println(e.toString());
+	        }
+		}else{
+			
+			
+    		response = Utility.constructJSON("UsersInRoom", false,"Empty game id! ");
+    	}
 		return response;
 		
 	}

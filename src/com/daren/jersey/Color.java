@@ -12,14 +12,14 @@ import org.codehaus.jettison.json.JSONObject;
 public class Color {
 	  @GET
 	  @Path("/checkcolor")
-	  public String checkColor(@QueryParam("color") String color)
+	  public String checkColor(@QueryParam("color") String color,@QueryParam("game_id") String gid)
 	  {
 		  String response="";
 	    	
-	    	if(Utility.isNotNull(color)){
+	    	if(Utility.isNotNull(color) && Utility.isNotNull(gid)){
 	    		
 				try {
-					if(DBConnection.checkColor(color)){
+					if(DBConnection.checkColor(color,gid)){
 						JSONObject obj = new JSONObject();
 			            try {
 			            	obj.put("tag", "CheckColor");
@@ -41,7 +41,7 @@ public class Color {
 	    		
 	           
 	    	}else{
-	    		response = Utility.constructJSON("CheckColor", false,"Empty color! ");
+	    		response = Utility.constructJSON("CheckColor", false,"Empty color or game id! ");
 	    	}
 			return response;
 		  
