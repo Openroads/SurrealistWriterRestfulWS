@@ -37,7 +37,7 @@ public class Register {
     }
  
     private int registerUser(String uname,String email, String pwd, String reg_date){
-        System.out.println("Inside checkCredentials");
+        System.out.println("Inside registerUser");
         int result = 4;
         if(Utility.isNotNull(uname) && Utility.isNotNull(pwd) && Utility.isNotNull(reg_date)){
             try {

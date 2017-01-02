@@ -193,4 +193,80 @@ public class DBConnection {
         return emailIsUsed;
 		
 	}
+	 public static boolean createRoom(int adminID, String roomName, String password,int maxPlayers,int status) throws SQLException, Exception {
+	        boolean insertStatus = false;
+	        Connection dbConn = null;
+	        try {
+	            try {
+	                dbConn = DBConnection.createConnection();
+	                //System.out.println("Create connection 0"+dbConn);
+	            } catch (Exception e) {
+	                
+	                  e.printStackTrace();
+	            }
+	            Statement stmt = dbConn.createStatement();
+	            
+	            String query = "INSERT into room(adminID,name,password,max_players,status) values('"
+	            + adminID + "','"+ roomName+"','"+ password  + "','" + maxPlayers + "','" + status + "')";
+	            //System.out.println(query);
+	            int records = stmt.executeUpdate(query);
+	            //System.out.println(records);
+	            //When record is successfully inserted
+	            if (records > 0) {
+	                insertStatus = true;
+	            }
+	        } catch (SQLException sqle) {
+	            //sqle.printStackTrace();
+	            throw sqle;
+	        } catch (Exception e) {
+	            //e.printStackTrace();
+	            if (dbConn != null) {
+	                dbConn.close();
+	            }
+	            throw e;
+	        } finally {
+	            if (dbConn != null) {
+	                dbConn.close();
+	            }
+	        }
+	        return insertStatus;
+	    }
+	 public static boolean createGame(int roundAmount,int maxWord,int status) throws SQLException, Exception {
+	        boolean insertStatus = false;
+	        Connection dbConn = null;
+	        try {
+	            try {
+	                dbConn = DBConnection.createConnection();
+	                //System.out.println("Create connection 0"+dbConn);
+	            } catch (Exception e) {
+	                
+	                  e.printStackTrace();
+	            }
+	         
+	            Statement stmt = dbConn.createStatement();
+	            String query = "INSERT into game(round_amount,max_word,status) values('"
+	            + roundAmount + "','" + maxWord  + "','" + status + "')";
+	            //System.out.println(query);
+	            int records = stmt.executeUpdate(query);
+	            //System.out.println(records);
+	            //When record is successfully inserted
+	            if (records > 0) {
+	                insertStatus = true;
+	            }
+	        } catch (SQLException sqle) {
+	            //sqle.printStackTrace();
+	            throw sqle;
+	        } catch (Exception e) {
+	            //e.printStackTrace();
+	            if (dbConn != null) {
+	                dbConn.close();
+	            }
+	            throw e;
+	        } finally {
+	            if (dbConn != null) {
+	                dbConn.close();
+	            }
+	        }
+	        return insertStatus;
+	    }
 }
