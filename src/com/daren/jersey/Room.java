@@ -1,6 +1,7 @@
 package com.daren.jersey;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -8,10 +9,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-@Path("/createroom")
+
+@Path("/room")
 public class Room {
 	@GET
     @Path("/docreateroom")  
@@ -54,6 +57,65 @@ public class Room {
         }
         
         return response;
+	}
+	@GET
+    @Path("/getroom")  
+    @Produces(MediaType.APPLICATION_JSON)
+	public String getCurrentRoom()
+	{
+		String response = "";
+		JSONArray roomsJSON ;
+		JSONObject  roomJSONObj = null;
+		ArrayList<String> data =new ArrayList<String>();
+		try {
+			data = DBConnection.selectCurrentMatches();
+			if(data.get(0) != null){
+	            try {
+	            	roomsJSON = new JSONArray();
+	            	int roomAmount = Integer.parseInt(data.get(0));
+	            	JSONObject firstobj = new JSONObject();
+	            	firstobj.put("tag", "CurrentRoom");
+	            	firstobj.put("status", true);
+	            	firstobj.put("room_amount", roomAmount);
+	            	for(int i =1;i<=roomAmount*5;i+=5){
+					JSONObject obj = new JSONObject();
+	            	
+	            	
+	            	int roomMode=1;
+	            	if(data.get(i+3).isEmpty())
+	            		roomMode = 0;
+	            		obj.put("game_id", data.get(i));
+	            	obj.put("room_name",data.get(i+1));
+	            	obj.put("max_places",data.get(i+2));
+	            	obj.put("occupied_places", data.get(i+4));
+	            	obj.put("mode",roomMode);
+	            	roomsJSON.put(obj);
+	            	
+	            	}
+	            	
+	            	roomJSONObj = new JSONObject();
+	            	roomJSONObj.put("Info",firstobj);
+		            roomJSONObj.put("RoomsArray", roomsJSON);
+	            	 /* 
+	            	//amount,gameid,roomname,maxplayers,password,occupiedplaces
+	            	*/
+	            	
+	            } catch (JSONException e) {
+	               //System.out.println(e.toString());
+	            }
+	            
+	            
+	            response = roomJSONObj.toString();
+	            //System.out.println("eee"+response);
+			}else{
+				response = Utility.constructJSON("CurrentRoom", false,"Wrong data,any room exists");
+			}
+			
+		} catch (SQLException e1) {
+				e1.printStackTrace();
+		}
+		return response;
+		
 	}
 	
 	private int createRoomAndGame(String admin_ID,String roomName,String password, String max_players, String num_rounds, String num_characters)

@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
  
 public class DBConnection {
     /**
@@ -351,8 +352,8 @@ public class DBConnection {
             }
          
             Statement stmt = dbConn.createStatement();
-            String query = "INSERT into gameUser(gameID,userID,color) values('" + userID
-            		+ "','" + gameID + "','" + colorI  + "')";
+            String query = "INSERT into gameUser(gameID,userID,color) values('" + gameID
+            		+ "','" + userID + "','" + colorI  + "')";
             //System.out.println(query);
             int records = stmt.executeUpdate(query);
             //System.out.println(records);
@@ -375,6 +376,63 @@ public class DBConnection {
             }
         }
         return insertStatus;
+		
+	}
+	public static ArrayList<String> selectCurrentMatches() throws SQLException {
+		ArrayList<String> roomData = null;
+    	Connection dbConn = null;
+    	
+    	try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Statement stmt = dbConn.createStatement();
+            Statement stmtinside = dbConn.createStatement();
+            roomData = new ArrayList<String>();
+            String roomAmount ="";
+            String query = "SELECT count(*) FROM matches join room on matches.roomID = room.roomID WHERE matches.status = 1";
+            ResultSet rs = stmt.executeQuery(query);
+            		while (rs.next()) {
+                        //System.out.println(rs.getString(2));
+                    	roomAmount=rs.getString(1);
+                    	roomData.add(roomAmount);
+                    	System.out.println(roomAmount);
+                    }
+            
+            query = "SELECT matches.gameID,room.name, room.max_players, room.password FROM matches join room on matches.roomID = room.roomID WHERE matches.status = 1";
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                //System.out.println(rs.getString(2));
+            	
+            	roomData.add(rs.getString(1));	
+            	roomData.add(rs.getString(2));
+            	roomData.add(rs.getString(3));
+            	roomData.add(rs.getString(4));
+            	   String query2 = "SELECT count(user.userID) FROM gameUser JOIN user on gameUser.userID = user.userID where gameUser.gameID ='"+ rs.getString(1)+"'";
+               	ResultSet rsinside = stmtinside.executeQuery(query2);
+                   while(rsinside.next())
+                   {
+                   	roomData.add(rsinside.getString(1));
+                   }
+            	            	
+            }
+         
+            System.out.println(roomData);
+        } catch (SQLException sqle) {
+            throw sqle;
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+		return roomData;
 		
 	}
 }
