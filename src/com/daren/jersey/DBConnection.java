@@ -206,11 +206,10 @@ public class DBConnection {
                 e.printStackTrace();
             }
             Statement stmt = dbConn.createStatement();
-            String query = "SELECT * FROM gameUser WHERE color = '" + color +" AND gameID = "+ gid +"'";
+            String query = "SELECT * FROM gameUser WHERE color = '" + color+ "'"+" AND  gameID = " + "'" + gid + "'";
             //System.out.println(query);
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                //System.out.println(rs.getString(1) + rs.getString(2) + rs.getString(3));
                 colorIsFree = false;
             }
         } catch (SQLException sqle) {
@@ -402,6 +401,7 @@ public class DBConnection {
                     }
             
             query = "SELECT matches.gameID,room.name, room.max_players, room.password FROM matches join room on matches.roomID = room.roomID WHERE matches.status = 1";
+            System.out.println(query);
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 //System.out.println(rs.getString(2));
@@ -411,7 +411,8 @@ public class DBConnection {
             	roomData.add(rs.getString(3));
             	roomData.add(rs.getString(4));
             	   String query2 = "SELECT count(user.userID) FROM gameUser JOIN user on gameUser.userID = user.userID where gameUser.gameID ='"+ rs.getString(1)+"'";
-               	ResultSet rsinside = stmtinside.executeQuery(query2);
+               	
+            	   ResultSet rsinside = stmtinside.executeQuery(query2);
                    while(rsinside.next())
                    {
                    	roomData.add(rsinside.getString(1));
