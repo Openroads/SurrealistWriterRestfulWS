@@ -8,6 +8,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
 @Path("/createroom")
 public class Room {
 	@GET
@@ -18,7 +21,26 @@ public class Room {
         
         int retCode = createRoomAndGame(adminID, name, pwd, numPlayers,numRounds,numCharacters);
         if(retCode == 0){
-            response = Utility.constructJSON("createRoom",true);
+        	JSONObject obj = new JSONObject();
+            try {
+            	String gameID = DBConnection.selectGameID();
+                obj.put("tag", "createRoom");
+                obj.put("status", true);
+                obj.put("gameId", gameID);
+                response = obj.toString();
+            } catch (JSONException e) {
+            	System.out.println("JSNON creating"+toString());
+            }catch(SQLException sqle){
+                System.out.println("createRoomAndGame catch sqle");
+                if(sqle.getErrorCode() == 1064){
+                    System.out.println(sqle.getErrorCode());
+                    response = Utility.constructJSON("createRoomAndGame",false, "Special Characters in passed data are not allowed ");
+                }else{
+                	response = Utility.constructJSON("createRoom",false, "Error occured");
+                	System.out.println(sqle.toString());
+                }
+            };
+            
         }else if(retCode == 1){
             response = Utility.constructJSON("createRoom",false, "Problem with creating new room");
         }else if(retCode == 2){
@@ -33,6 +55,7 @@ public class Room {
         
         return response;
 	}
+	
 	private int createRoomAndGame(String admin_ID,String roomName,String password, String max_players, String num_rounds, String num_characters)
 	{
 		int result=4;
@@ -83,4 +106,5 @@ public class Room {
 		return result;
 		
 	}
+	
 }

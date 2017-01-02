@@ -199,7 +199,7 @@ public class DBConnection {
 	        try {
 	            try {
 	                dbConn = DBConnection.createConnection();
-	                System.out.println("Create connection 0"+dbConn);
+	               // System.out.println("Create connection 0"+dbConn);
 	            } catch (Exception e) {
 	                
 	                  e.printStackTrace();
@@ -269,4 +269,78 @@ public class DBConnection {
 	        }
 	        return insertStatus;
 	    }
+	 public static String selectGameID() throws SQLException
+	 {
+		 String gameID ="";
+			Connection dbConn = null;
+	    	
+	    	try {
+	            try {
+	                dbConn = DBConnection.createConnection();
+	            } catch (Exception e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	            }
+	            Statement stmt = dbConn.createStatement();
+	            String query = "SELECT max(gameID) FROM game";
+	            //System.out.println(query);
+	            ResultSet rs = stmt.executeQuery(query);
+	            while (rs.next()) {
+	                //System.out.println(rs.getString(1) + rs.getString(2) + rs.getString(3));
+	                gameID = rs.getString(1);
+	            }
+	        } catch (SQLException sqle) {
+	            throw sqle;
+	        } catch (Exception e) {
+	            if (dbConn != null) {
+	                dbConn.close();
+	            }
+	            throw e;
+	        } finally {
+	            if (dbConn != null) {
+	                dbConn.close();
+	            }
+	        }
+	        return gameID;
+		 
+	 }
+	public static boolean insertGameUser(int userID, int gameID, int colorI) throws SQLException {
+		boolean insertStatus = false;
+        Connection dbConn = null;
+        try {
+            try {
+                dbConn = DBConnection.createConnection();
+                //System.out.println("Create connection 0"+dbConn);
+            } catch (Exception e) {
+                
+                  e.printStackTrace();
+            }
+         
+            Statement stmt = dbConn.createStatement();
+            String query = "INSERT into gameUser(gameID,userID,color) values('" + userID
+            		+ "','" + gameID + "','" + colorI  + "')";
+            //System.out.println(query);
+            int records = stmt.executeUpdate(query);
+            //System.out.println(records);
+            //When record is successfully inserted
+            if (records > 0) {
+                insertStatus = true;
+            }
+        } catch (SQLException sqle) {
+            //sqle.printStackTrace();
+            throw sqle;
+        } catch (Exception e) {
+            //e.printStackTrace();
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+        return insertStatus;
+		
+	}
 }
