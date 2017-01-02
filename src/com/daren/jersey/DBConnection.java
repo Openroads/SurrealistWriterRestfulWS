@@ -19,7 +19,7 @@ public class DBConnection {
         try {
             Class.forName(Constants.dbClass);
             con = DriverManager.getConnection(Constants.dbUrl, Constants.dbUser, Constants.dbPwd);
-            //System.out.println("Inside createconn"+con);
+            System.out.println("Inside createconn"+con);
         } catch (Exception e) {
         	System.out.println("EXCEPTION " + e.toString());
             throw e;
@@ -193,21 +193,21 @@ public class DBConnection {
         return emailIsUsed;
 		
 	}
-	 public static boolean createRoom(int adminID, String roomName, String password,int maxPlayers,int status) throws SQLException, Exception {
+	 public static boolean createRoom(int adminID, String roomName, String password,int maxPlayers) throws SQLException, Exception {
 	        boolean insertStatus = false;
 	        Connection dbConn = null;
 	        try {
 	            try {
 	                dbConn = DBConnection.createConnection();
-	                //System.out.println("Create connection 0"+dbConn);
+	                System.out.println("Create connection 0"+dbConn);
 	            } catch (Exception e) {
 	                
 	                  e.printStackTrace();
 	            }
 	            Statement stmt = dbConn.createStatement();
 	            
-	            String query = "INSERT into room(adminID,name,password,max_players,status) values('"
-	            + adminID + "','"+ roomName+"','"+ password  + "','" + maxPlayers + "','" + status + "')";
+	            String query = "INSERT into room(adminID,name,password,max_players) values('"
+	            + adminID + "','"+ roomName+"','"+ password  + "','" + maxPlayers  + "')";
 	            //System.out.println(query);
 	            int records = stmt.executeUpdate(query);
 	            //System.out.println(records);

@@ -39,10 +39,10 @@ public class Room {
 		
 		if(Utility.isNotNull(admin_ID) && Utility.isNotNull(roomName) && Utility.isNotNull(max_players) && Utility.isNotNull(num_rounds)&& Utility.isNotNull(num_characters)){
             try {
-            	int roomStatus = 1;
+            	
             	int maxPlayers = Integer.parseInt(max_players);
             	int adminID = Integer.parseInt(admin_ID);
-            	if(DBConnection.createRoom(adminID, roomName, password, maxPlayers,roomStatus) == false)
+            	if(DBConnection.createRoom(adminID, roomName, password, maxPlayers) == false)
             	{
             		result = 0;
             	}else{
