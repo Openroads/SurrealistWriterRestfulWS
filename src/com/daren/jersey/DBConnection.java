@@ -20,7 +20,7 @@ public class DBConnection {
         try {
             Class.forName(Constants.dbClass);
             con = DriverManager.getConnection(Constants.dbUrl, Constants.dbUser, Constants.dbPwd);
-            System.out.println("Inside createconn"+con);
+            System.out.println("Connection with mysql: createconnection"+con);
         } catch (Exception e) {
         	System.out.println("EXCEPTION " + e.toString());
             throw e;
@@ -397,11 +397,9 @@ public class DBConnection {
                         //System.out.println(rs.getString(2));
                     	roomAmount=rs.getString(1);
                     	roomData.add(roomAmount);
-                    	System.out.println(roomAmount);
-                    }
+                        }
             
             query = "SELECT matches.gameID,room.name, room.max_players, room.password FROM matches join room on matches.roomID = room.roomID WHERE matches.status = 1";
-            System.out.println(query);
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 //System.out.println(rs.getString(2));
@@ -420,7 +418,6 @@ public class DBConnection {
             	            	
             }
          
-            System.out.println(roomData);
         } catch (SQLException sqle) {
             throw sqle;
         } catch (Exception e) {

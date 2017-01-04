@@ -21,6 +21,7 @@ public class Login {
     @Produces(MediaType.APPLICATION_JSON) 
     public String getLogDate(@QueryParam("email") String email)
     {
+    	System.out.println("request /login/dologin");
     	String response="";
     	    	
     	if(Utility.isNotNull(email)){

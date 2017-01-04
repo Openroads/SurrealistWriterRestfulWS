@@ -15,6 +15,7 @@ public class GameUser {
     @Produces(MediaType.APPLICATION_JSON)
 	public  String createGameUser(@QueryParam("user_id") String uid,@QueryParam("game_id") String gid,@QueryParam("color") String color)
 	{
+		 System.out.println("request /gameuser/creategameuser");
 		String response = "";
 	       
 	        int retCode = insertGameUser(uid,gid,color);

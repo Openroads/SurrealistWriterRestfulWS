@@ -14,6 +14,7 @@ public class Color {
 	  @Path("/checkcolor")
 	  public String checkColor(@QueryParam("color") String color,@QueryParam("game_id") String gid)
 	  {
+		  System.out.println("request /color/checkcolor");
 		  String response="";
 	    	
 	    	if(Utility.isNotNull(color) && Utility.isNotNull(gid)){

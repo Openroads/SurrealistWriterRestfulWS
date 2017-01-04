@@ -18,7 +18,8 @@ public class Register {
     @Produces(MediaType.APPLICATION_JSON) 
     // Query parameters are parameters: http://localhost/<appln-folder-name>/register/doregister?name=pqrs&username=abc&password=xyz
     public String doRegister(@QueryParam("username") String uname,@QueryParam("email") String email, @QueryParam("password") String pwd,@QueryParam("register_date") String reg_date){
-        String response = "";
+    	System.out.println("request /register/doregister");
+    	String response = "";
        // System.out.println("Inside doLogin "+uname+"  "+pwd+" "+reg_date);
         int retCode = registerUser(uname, email,pwd,reg_date);
         if(retCode == 0){

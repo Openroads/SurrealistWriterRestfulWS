@@ -25,7 +25,8 @@ public class Room {
     @Path("/docreateroom")  
     @Produces(MediaType.APPLICATION_JSON)
     public String doCreateRoom(@QueryParam("room_name") String name,@QueryParam("max_num_players") String numPlayers, @QueryParam("num_characters") String numCharacters ,@QueryParam("num_rounds") String numRounds,@QueryParam("password") String pwd,@QueryParam("user_id") String adminID){
-        String response = "";
+		System.out.println("request /room/docreateroom");
+		String response = "";
         
         int retCode = createRoomAndGame(adminID, name, pwd, numPlayers,numRounds,numCharacters);
         if(retCode == 0){
@@ -68,6 +69,7 @@ public class Room {
     @Produces(MediaType.APPLICATION_JSON)
 	public String getCurrentRoom()
 	{
+		System.out.println("request /room/getroom");
 		String response = "";
 		JSONArray roomsJSON ;
 		JSONObject  roomJSONObj = null;
@@ -127,6 +129,7 @@ public class Room {
     @Produces(MediaType.APPLICATION_JSON)
 	public String getPlayersInRoom(@QueryParam("game_id") String gid)
 	{
+		System.out.println("request /room/playersinroom");
 		String response="";
 		
 		if(Utility.isNotNull(gid)){
