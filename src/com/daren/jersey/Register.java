@@ -50,8 +50,7 @@ public class Register {
             		result = 3;
             	}
             	else if(DBConnection.insertUser( uname, email, pwd, reg_date)){
-                    //System.out.println("RegisterUSer if");
-                    result = 0;
+                     result = 0;
                 }
             } catch(SQLException sqle){
                 System.out.println("RegisterUSer catch sqle");
