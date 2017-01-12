@@ -124,6 +124,50 @@ public class Room {
 		return response;
 		
 	}
+	
+	@GET
+    @Path("/closeroom")  
+    @Produces(MediaType.APPLICATION_JSON)
+	public String closeRoom(@QueryParam("game_id") String gid)
+	{
+		System.out.println("request /room/closeroom");
+		
+		String response="";
+		
+		if(Utility.isNotNull(gid)){
+            try {
+            	
+            	int gameID = Integer.parseInt(gid);
+   
+            	if(DBConnection.changeRoomAndGameStatus(gameID) == true)
+            	{
+            		response = Utility.constructJSON("closeroom",true);
+            	}else{
+            		response = Utility.constructJSON("closeroom",false, "I cant close that room. ");
+            	}
+            		
+            } catch(SQLException sqle){
+                System.out.println("closeroom catch sqle");
+              
+                //When special characters are used 
+                if(sqle.getErrorCode() == 1064){
+                    System.out.println(sqle.getErrorCode());
+                    response = Utility.constructJSON("closeroom",false, "Special Characters used in data");
+                }else{
+                	System.out.println(sqle.toString());
+                }
+            }catch (Exception e) {
+               	e.printStackTrace();
+                System.out.println("Inside nextTurn catch e "+e.toString());
+                response = Utility.constructJSON("closeroom",false, "Error occured");
+            }
+        }else{
+            System.out.println("Inside jointogame,some parameter is null");
+            response = Utility.constructJSON("closeroom",false, "Some parameter is empty");
+        }
+		return response;
+		
+	}
 	@GET
     @Path("/playersinroom")  
     @Produces(MediaType.APPLICATION_JSON)

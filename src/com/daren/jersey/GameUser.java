@@ -23,6 +23,10 @@ public class GameUser {
 	            response = Utility.constructJSON("createGameUser",true);
 	        }else if(retCode == 2){
 	            response = Utility.constructJSON("createGameUser",false, "Special Characters are not allowed in Username and Password");
+	        }else if(retCode == 3)
+	        {
+	        	response = Utility.constructJSON("createGameUser",false, "You cannot join to running game. Select another game.");
+	        	
 	        }else if(retCode == 4){
 	        	response = Utility.constructJSON("createGameUser",false, "Error occured");
 	        }else if(retCode == 5){
@@ -40,11 +44,19 @@ public class GameUser {
             	int userID = Integer.parseInt(uid);
             	int gameID = Integer.parseInt(gid);
             	int colorI = Integer.parseInt(color);
-            	if(DBConnection.insertGameUser(userID,gameID,colorI) == true)
-            	{
-            		result = 0;
-            	}
             	
+            	// it means that game is running 
+            	if(DBConnection.selectGameStatus(gameID) == true)
+            	{
+            		result = 3;
+            	}else
+            	{
+	            	
+	            	if(DBConnection.insertGameUser(userID,gameID,colorI) == true)
+	            	{
+	            		result = 0;
+	            	}
+            	}
                	
             } catch(SQLException sqle){
                 System.out.println("createRoomAndGame catch sqle");

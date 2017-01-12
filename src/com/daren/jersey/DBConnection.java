@@ -61,7 +61,7 @@ public class DBConnection {
         } catch (SQLException sqle) {
             throw sqle;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+            
             if (dbConn != null) {
                 dbConn.close();
             }
@@ -168,7 +168,7 @@ public class DBConnection {
             try {
                 dbConn = DBConnection.createConnection();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
+         
                 e.printStackTrace();
             }
             Statement stmt = dbConn.createStatement();
@@ -202,7 +202,7 @@ public class DBConnection {
             try {
                 dbConn = DBConnection.createConnection();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
+               
                 e.printStackTrace();
             }
             Statement stmt = dbConn.createStatement();
@@ -312,7 +312,7 @@ public class DBConnection {
 	            try {
 	                dbConn = DBConnection.createConnection();
 	            } catch (Exception e) {
-	                // TODO Auto-generated catch block
+	            
 	                e.printStackTrace();
 	            }
 	            Statement stmt = dbConn.createStatement();
@@ -528,7 +528,8 @@ public class DBConnection {
 		boolean gameUpdateStatus = false;
 		String current_text="";
 		String color_text = "";
-		int  current_round =0;
+		int  current_round = 0;
+		int round_amount = 0;
         Connection dbConn = null;
         try {
             try {
@@ -541,23 +542,26 @@ public class DBConnection {
          
             Statement stmt = dbConn.createStatement();
             String query = "SELECT game.current_text,game.color_text,game.current_round,game.round_amount FROM game where game.gameID= '" + gameID + "'";
+            System.out.println(query);
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 //System.out.println(rs.getString(2));
-            	current_text=rs.getString(1);
-            	color_text = rs.getString(2);
-            	current_round = Integer.parseInt(rs.getString(3));
+            	current_text	= rs.getString(1);
+            	color_text 		= rs.getString(2);
+            	current_round 	= rs.getInt(3);
+            	round_amount 	= rs.getInt(4);
             	
                 }
             System.out.println("Pierdy "+current_round +"" +current_text+""+ color_text);
             current_text = current_text + "@" + words;
             color_text = color_text +"@"+ color;
-            current_round = current_round+1;
+            
             System.out.println("Pierdy "+current_round +"" +current_text+""+ color_text);
-            query = "UPDATE game set game.current_text = '"+ current_text  +"',game.color_text = '"+ color_text +"',game.current_round = '"+ current_round +"' WHERE game.gameID = '" + gameID +  "'";
+            int records =0;
+           /*
             System.out.println(query);
             int records = stmt.executeUpdate(query);
-            
+            */
             /** set new user in turn  **/
             ArrayList<Integer> users = new ArrayList<Integer>();
             query = "SELECT gameUser.userID FROM gameUser WHERE gameUser.gameID = '" + gameID + "'";
@@ -567,7 +571,7 @@ public class DBConnection {
                 //System.out.println(rs.getString(2));
             	users.add(rs.getInt(1));
             	
-                }
+            }
             int uNumber = users.size();
             int nextUser = 0;
             for(int i =0; i< uNumber ;i++)
@@ -579,9 +583,21 @@ public class DBConnection {
             	else
             	{
             		nextUser = users.get(0);
+            		current_round = current_round+1;
+            		//TODO nie jestem pewny
+            		if(round_amount + 1 == current_round)
+            		{
+            			query = "UPDATE game set game.status = 2 WHERE game.gameID = '" + gameID +  "'";
+                        System.out.println(query);
+                        records = stmt.executeUpdate(query);
+                        query  = "UPDATE matches set matches.status = 0 WHERE matches.gameID = '" + gameID +  "'";
+                        records = stmt.executeUpdate(query);
+            		}
+            		
             	}
+            	System.out.println("Next user:"+nextUser);
             }
-            query = "UPDATE game set game.nextUserID = '"+ nextUser +"' WHERE game.gameID = '" + gameID +  "'";
+            query = "UPDATE game set game.current_text = '"+ current_text  +"',game.color_text = '"+ color_text +"',game.current_round = '"+ current_round +"',game.nextUserID = '"+ nextUser +"' WHERE game.gameID = '" + gameID +  "'";
             System.out.println(query);
             records = stmt.executeUpdate(query);
             //System.out.println(records);
@@ -650,5 +666,186 @@ public class DBConnection {
             }
         }
         return checkGameStatus;
+	}
+	public static Game selectGame(int gameID) throws SQLException
+	{
+		Game game;
+		String lastWords="";
+		int color=0;
+		String lastColors="";
+		Connection dbConn = null;
+        try {
+            try {
+                dbConn = DBConnection.createConnection();
+                //System.out.println("Create connection 0"+dbConn);
+            } catch (Exception e) {
+                
+                  e.printStackTrace();
+            }
+            game = new Game();
+            Statement stmt = dbConn.createStatement();
+            
+            String query = "SELECT * FROM game WHERE game.gameID = '" + gameID + "'";
+            System.out.println(query);
+            ResultSet rs = stmt.executeQuery(query);
+            
+            String current_text="";
+            if (rs.next()) {
+                //System.out.println(rs.getString(2));
+            	game.setGameID(rs.getInt(1));
+            	
+            	current_text = rs.getString(3);
+            	game.setCurrent_text(current_text);
+            	lastColors = rs.getString(4);
+            	game.setColor_text(lastColors);
+            	game.setCurrentRound(rs.getInt(5));
+            	game.setRoundAmount(rs.getInt(6));
+            	game.setMax_word(rs.getInt(7));
+            	game.setStatus(rs.getInt(8));
+            	System.out.println("wyjebujemy"+game.getGameID());
+            }
+           
+            
+            //TODO do sprawdzenia
+            System.out.println("MAX WORD IN CONNECTION " + game.getMax_word());
+            if(current_text == null || current_text.isEmpty())
+            {
+            	lastWords = "";
+            }else
+            {
+            	 String[] s2 = current_text.split("@");
+            	 String[] s3 = s2[s2.length-1].split(" ");
+                 String word1;
+                 String word2;
+                 if(s3.length == 1){
+                   word1 = "";
+                   word2 = s3[s3.length-1];
+                 }
+                 else{
+                   word1 = s3[s3.length-2];
+                   word2 = s3[s3.length-1];
+                 }
+                 System.out.println(word1+" "+word2);
+                 lastWords =word1 +" " + word2;
+		                          	
+		        }
+		        if(lastColors == null || lastColors.isEmpty())
+		        {
+		        	color=0;
+		        }else
+		        {
+		            String[] col = lastColors.split("@");
+		            String colo  = col[col.length-1];
+		            System.out.println(colo);
+		            color = Integer.parseInt(colo);
+		            game.setLastColor(color);
+		            game.setLastTwoWords(lastWords);
+		        	
+		        }
+               
+                           
+        } catch (SQLException sqle) {
+            //sqle.printStackTrace();
+            throw sqle;
+        } catch (Exception e) {
+            //e.printStackTrace();
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+		return game;
+	}
+	public static boolean checkIfUserTurn(int gameID, int userID) throws SQLException {
+		boolean checkMyTurn = false;
+        Connection dbConn = null;
+        try {
+            try {
+                dbConn = DBConnection.createConnection();
+                //System.out.println("Create connection 0"+dbConn);
+            } catch (Exception e) {
+                
+                  e.printStackTrace();
+            }
+            
+            Statement stmt = dbConn.createStatement();
+            
+            String query = "SELECT game.nextUserID FROM game WHERE game.gameID = '" + gameID + "'";
+            
+            ResultSet rs = stmt.executeQuery(query);
+            
+            int nextUser =-1;
+            if (rs.next()) {
+                //System.out.println(rs.getString(2));
+            	nextUser = rs.getInt(1);
+            }
+            System.out.println(nextUser);
+            if(nextUser == userID)
+            {
+            	checkMyTurn = true;
+            }
+            
+        } catch (SQLException sqle) {
+            //sqle.printStackTrace();
+            throw sqle;
+        } catch (Exception e) {
+            //e.printStackTrace();
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+        return checkMyTurn;
+	}
+	
+	//TODO BACK TO THIS
+	public static boolean changeRoomAndGameStatus(int gameID) throws SQLException {
+		boolean changingStatus = false;
+        Connection dbConn = null;
+        try {
+            try {
+                dbConn = DBConnection.createConnection();
+                //System.out.println("Create connection 0"+dbConn);
+            } catch (Exception e) {
+                
+                  e.printStackTrace();
+            }
+            
+            Statement stmt = dbConn.createStatement();
+         
+                     
+            String query = "UPDATE game set game.status = 2 WHERE game.gameID = '" + gameID +  "'";
+            //System.out.println(query);
+            int records = stmt.executeUpdate(query);
+            //System.out.println(records);
+            query  = "UPDATE matches set matches.status = 0 WHERE matches.gameID = '" + gameID +  "'";
+            records = stmt.executeUpdate(query);
+            if (records > 0) {
+            	changingStatus = true;
+            }
+        } catch (SQLException sqle) {
+            //sqle.printStackTrace();
+            throw sqle;
+        } catch (Exception e) {
+            //e.printStackTrace();
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+        return changingStatus;
+		
 	}
 }
